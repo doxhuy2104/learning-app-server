@@ -9,12 +9,15 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DecodedIdToken } from 'firebase-admin/auth';
+import { Group } from '../group/entities/group.entity';
 
 @Injectable()
-export class UsersService {
+export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        @InjectRepository(Group)
+        private readonly groupRepository: Repository<Group>,
     ) { }
 
     async create(createUserDto: CreateUserDto): Promise<User> {
@@ -25,6 +28,8 @@ export class UsersService {
             throw new ConflictException('Email already exists');
         }
 
+        const group = await this.getGroupIfProvided(createUserDto.groupId);
+
         const user = this.userRepository.create({
             email: createUserDto.email,
             fullName: createUserDto.fullName,
@@ -33,6 +38,7 @@ export class UsersService {
             loginType: createUserDto.loginType,
             isActive: createUserDto.isActive ?? true,
             isVerified: createUserDto.isVerified ?? false,
+            group,
         });
 
         const savedUser = await this.userRepository.save(user);
@@ -43,7 +49,6 @@ export class UsersService {
         firebaseToken: DecodedIdToken,
         additionalData?: Partial<CreateUserDto>,
         token?: string,
-
     ): Promise<User> {
         const email = firebaseToken.email;
         if (!email) {
@@ -67,11 +72,16 @@ export class UsersService {
                 if (additionalData.fullName) user.fullName = additionalData.fullName;
                 if (additionalData.avatar) user.avatar = additionalData.avatar;
                 if (additionalData.dob) user.dob = new Date(additionalData.dob);
+                if (additionalData.groupId !== undefined) {
+                    user.group = await this.getGroupIfProvided(additionalData.groupId);
+                }
             }
             const updatedUser = await this.userRepository.save(user);
             return updatedUser;
         }
 
+
+        const group = await this.getGroupIfProvided(additionalData?.groupId);
 
         const newUser = this.userRepository.create({
             email,
@@ -82,6 +92,7 @@ export class UsersService {
             isActive: true,
             isVerified: firebaseToken.email_verified ?? false,
             lastLogin: new Date(),
+            group,
         });
 
         const savedUser = await this.userRepository.save(newUser);
@@ -92,6 +103,7 @@ export class UsersService {
     async findAll(): Promise<User[]> {
         const users = await this.userRepository.find({
             order: { createdAt: 'DESC' },
+            relations: ['group'],
         });
         return users;
     }
@@ -99,6 +111,7 @@ export class UsersService {
     async findOne(id: number): Promise<User> {
         const user = await this.userRepository.findOne({
             where: { userId: id },
+            relations: ['group', 'group.subjects'],
         });
 
         if (!user) {
@@ -111,6 +124,7 @@ export class UsersService {
     async findByEmail(email: string): Promise<User | null> {
         return this.userRepository.findOne({
             where: { email },
+            relations: ['group'],
         });
     }
 
@@ -120,6 +134,7 @@ export class UsersService {
     ): Promise<User> {
         const user = await this.userRepository.findOne({
             where: { userId: id },
+            relations: ['group'],
         });
 
         if (!user) {
@@ -146,6 +161,9 @@ export class UsersService {
         if (updateUserDto.isActive !== undefined) user.isActive = updateUserDto.isActive;
         if (updateUserDto.isVerified !== undefined)
             user.isVerified = updateUserDto.isVerified;
+        if (updateUserDto.groupId !== undefined) {
+            user.group = await this.getGroupIfProvided(updateUserDto.groupId);
+        }
 
         const updatedUser = await this.userRepository.save(user);
         return updatedUser;
@@ -175,5 +193,21 @@ export class UsersService {
             { userId: id },
             { accessToken: token },
         );
+    }
+
+    private async getGroupIfProvided(groupId?: number | null): Promise<Group | undefined> {
+        if (groupId === undefined || groupId === null) {
+            return undefined;
+        }
+
+        const group = await this.groupRepository.findOne({
+            where: { id: groupId },
+        });
+
+        if (!group) {
+            throw new NotFoundException(`Group with ID ${groupId} not found`);
+        }
+
+        return group;
     }
 }

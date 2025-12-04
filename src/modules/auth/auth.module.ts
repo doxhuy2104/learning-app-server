@@ -3,14 +3,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsersModule } from '../users/users.module';
+import { UserModule } from '../user/user.module';
 import { FirebaseModule } from '../../firebase/firebase.module';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import type { JwtModuleOptions } from '@nestjs/jwt';
 
 @Module({
     imports: [
-        forwardRef(() => UsersModule), // Dùng forwardRef để tránh circular dependency
+        forwardRef(() => UserModule), // Dùng forwardRef để tránh circular dependency
         FirebaseModule,
         JwtModule.registerAsync({
             imports: [ConfigModule],

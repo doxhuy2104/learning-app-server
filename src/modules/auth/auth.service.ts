@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { FirebaseService } from '../../firebase/firebase.service';
-import { UsersService } from '../users/users.service';
+import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { DecodedIdToken } from 'firebase-admin/auth';
@@ -14,7 +14,7 @@ import { DecodedIdToken } from 'firebase-admin/auth';
 export class AuthService {
     constructor(
         private readonly firebaseService: FirebaseService,
-        private readonly usersService: UsersService,
+        private readonly usersService: UserService,
         private readonly jwtService: JwtService,
     ) { }
 
@@ -73,20 +73,20 @@ export class AuthService {
             throw new BadRequestException('User already exists. Please login instead.');
         }
 
+        const fullName =
+            decodedToken.name?.trim() || registerDto.fullName || undefined;
+
         const user = await this.usersService.createOrUpdateFromFirebaseToken(
             decodedToken,
             {
-                fullName: registerDto.fullName,
+                fullName: fullName,
             }
         );
 
-        // Tạo JWT token chỉ chứa user_id
         const jwtToken = this.jwtService.sign({ user_id: user.userId });
 
-        // Lưu token vào user
         await this.usersService.updateToken(user.userId, jwtToken);
 
-        // Cập nhật user với token mới
         user.accessToken = jwtToken;
 
         return {

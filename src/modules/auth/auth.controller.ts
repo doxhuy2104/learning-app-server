@@ -14,13 +14,13 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { UsersService } from '../users/users.service';
+import { UserService } from '../user/user.service';
 
 @Controller('auth')
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
-        private readonly usersService: UsersService,
+        private readonly usersService: UserService,
     ) { }
 
     @Post('login')

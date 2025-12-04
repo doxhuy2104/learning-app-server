@@ -12,7 +12,7 @@ import {
     UseGuards,
     Req,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
@@ -20,9 +20,9 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { DecodedIdToken } from 'firebase-admin/auth';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@Controller('users')
-export class UsersController {
-    constructor(private readonly usersService: UsersService) { }
+@Controller('user')
+export class UserController {
+    constructor(private readonly userService: UserService) { }
 
     /**
      * Sync/Create user from Firebase token
@@ -35,7 +35,7 @@ export class UsersController {
         @CurrentUser() firebaseUser: DecodedIdToken,
         @Body() additionalData?: Partial<CreateUserDto>,
     ) {
-        return this.usersService.createOrUpdateFromFirebaseToken(
+        return this.userService.createOrUpdateFromFirebaseToken(
             firebaseUser,
             additionalData,
         );
@@ -47,15 +47,13 @@ export class UsersController {
     @UseGuards(JwtAuthGuard)
     @Get('me')
     async getCurrentUser(@CurrentUser() token: string, @Req() req: any) {
-        // Lấy decoded payload từ request (đã được verify bởi JwtAuthGuard)
         const decoded = req.user;
 
         if (!decoded || !decoded.user_id) {
             throw new Error('User ID not found in token');
         }
 
-        // Lấy user từ database bằng user_id
-        const user = await this.usersService.findOne(decoded.user_id);
+        const user = await this.userService.findOne(decoded.user_id);
         return user;
     }
 
@@ -66,31 +64,21 @@ export class UsersController {
     @Post()
     @HttpCode(HttpStatus.CREATED)
     async create(@Body() createUserDto: CreateUserDto) {
-        return this.usersService.create(createUserDto);
+        return this.userService.create(createUserDto);
     }
 
-    /**
-     * Get all users (admin only)
-     */
     @UseGuards(JwtAuthGuard)
     @Get()
     async findAll() {
-        return this.usersService.findAll();
+        return this.userService.findAll();
     }
 
-    /**
-     * Get user by ID
-     */
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.usersService.findOne(id);
+        return this.userService.findOne(id);
     }
 
-    /**
-     * Update user
-     * Users can only update their own profile, or admin can update any
-     */
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
     async update(
@@ -100,7 +88,7 @@ export class UsersController {
     ) {
         // Optional: Add check to ensure user can only update their own profile
         // For now, allowing any authenticated user to update any profile
-        return this.usersService.update(id, updateUserDto);
+        return this.userService.update(id, updateUserDto);
     }
 
     /**
@@ -110,6 +98,6 @@ export class UsersController {
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     async remove(@Param('id', ParseIntPipe) id: number) {
-        await this.usersService.remove(id);
+        await this.userService.remove(id);
     }
 }

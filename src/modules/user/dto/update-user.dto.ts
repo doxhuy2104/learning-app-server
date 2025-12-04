@@ -5,6 +5,7 @@ import {
     IsDateString,
     IsBoolean,
     MaxLength,
+    IsInt,
 } from 'class-validator';
 
 export class UpdateUserDto {
@@ -43,5 +44,9 @@ export class UpdateUserDto {
     @IsOptional()
     @IsBoolean()
     isVerified?: boolean;
+
+    @IsOptional()
+    @IsInt()
+    groupId?: number;
 }
 

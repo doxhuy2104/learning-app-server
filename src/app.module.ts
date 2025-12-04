@@ -2,9 +2,18 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './modules/users/users.module';
+import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { AnswerModule } from './modules/answer/answer.module';
+import { CourseModule } from './modules/course/course.module';
+import { ExamModule } from './modules/exam/exam.module';
+import { LessonModule } from './modules/lesson/lesson.module';
+import { QuestionModule } from './modules/question/question.module';
+import { ParagraphModule } from './modules/paragraph/paragraph.module';
 import { ConfigModule } from '@nestjs/config';
+import { SubjectModule } from './modules/subject/subject.module';
+import { GroupModule } from './modules/group/group.module';
+import { SubExamModule } from './modules/sub-exam/sub-exam.module';
 
 @Module({
   imports: [
@@ -19,8 +28,17 @@ import { ConfigModule } from '@nestjs/config';
       synchronize: process.env.NODE_ENV !== 'production',
       logging: process.env.NODE_ENV === 'development',
     }),
-    UsersModule,
+    UserModule,
     AuthModule,
+    AnswerModule,
+    CourseModule,
+    ExamModule,
+    LessonModule,
+    QuestionModule,
+    ParagraphModule,
+    SubjectModule,
+    GroupModule,
+    SubExamModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
     })

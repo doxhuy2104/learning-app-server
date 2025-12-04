@@ -5,7 +5,10 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     Index,
+    ManyToOne,
+    JoinColumn,
 } from 'typeorm';
+import { Group } from 'src/modules/group/entities/group.entity';
 
 @Entity('users')
 @Index(['email'])
@@ -45,5 +48,12 @@ export class User {
 
     @Column({ name: 'access_token', type: 'varchar', length: 500, nullable: true })
     accessToken?: string;
+
+    @Column({ name: 'group_id', type: 'int', nullable: true })
+    groupId?: number;
+
+    @ManyToOne(() => Group, { nullable: true })
+    @JoinColumn({ name: 'group_id' })
+    group?: Group;
 }
 
