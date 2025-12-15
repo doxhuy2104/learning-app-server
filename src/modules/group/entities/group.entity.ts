@@ -13,18 +13,13 @@ export class Group {
     @ManyToMany(() => Subject, (subject) => subject.groups)
     @JoinTable({
         name: 'group_subjects',
-        joinColumn: { name: 'group_id', referencedColumnName: 'id' },
-        inverseJoinColumn: { name: 'subject_id', referencedColumnName: 'id' },
+        joinColumn: { name: 'groupId', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'subjectId', referencedColumnName: 'id' },
     })
     subjects: Subject[];
 
     @OneToMany(() => User, (user) => user.group)
     users?: User[];
 
-    @CreateDateColumn()
-    createdAt: Date;
-
-    @UpdateDateColumn()
-    updatedAt: Date;
 }
 

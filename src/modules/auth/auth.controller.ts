@@ -43,10 +43,10 @@ export class AuthController {
     ) {
         const decoded = req.user;
 
-        if (!decoded || !decoded.user_id) {
+        if (!decoded || !decoded.id) {
             throw new Error('User ID not found in token');
         }
-        const user = await this.usersService.findOne(decoded.user_id);
+        const user = await this.usersService.findOne(decoded.id);
         return user;
     }
 

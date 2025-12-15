@@ -13,13 +13,13 @@ import { Group } from 'src/modules/group/entities/group.entity';
 @Entity('users')
 @Index(['email'])
 export class User {
-    @PrimaryGeneratedColumn({ name: 'user_id' })
-    userId: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @Column({ type: 'varchar', length: 255, unique: true })
     email: string;
 
-    @Column({ name: 'full_name', type: 'varchar', length: 255, nullable: true })
+    @Column({ type: 'varchar', length: 255, nullable: true })
     fullName?: string;
 
     @Column({ type: 'varchar', length: 500, nullable: true })
@@ -28,32 +28,32 @@ export class User {
     @Column({ type: 'date', nullable: true })
     dob?: Date;
 
-    @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+    @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
 
-    @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+    @UpdateDateColumn({ type: 'timestamp' })
     updatedAt: Date;
 
-    @Column({ name: 'last_login', type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     lastLogin?: Date;
 
-    @Column({ name: 'login_type', type: 'varchar', length: 32, nullable: true })
+    @Column({ type: 'varchar', length: 32, nullable: true })
     loginType?: string;
 
-    @Column({ name: 'is_active', type: 'boolean', default: true })
+    @Column({ type: 'boolean', default: true })
     isActive: boolean;
 
-    @Column({ name: 'is_verified', type: 'boolean', default: false })
+    @Column({ type: 'boolean', default: false })
     isVerified: boolean;
 
-    @Column({ name: 'access_token', type: 'varchar', length: 500, nullable: true })
+    @Column({ type: 'varchar', length: 500, nullable: true })
     accessToken?: string;
 
-    @Column({ name: 'group_id', type: 'int', nullable: true })
+    @Column({ type: 'int', nullable: true })
     groupId?: number;
 
     @ManyToOne(() => Group, { nullable: true })
-    @JoinColumn({ name: 'group_id' })
+    @JoinColumn()
     group?: Group;
 }
 

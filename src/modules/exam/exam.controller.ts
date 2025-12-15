@@ -40,7 +40,7 @@ export class ExamController {
 
     @Get('course/:courseId')
     findByCourseId(@Param('courseId', ParseIntPipe) courseId: number) {
-        return this.examService.findByLessonId(courseId);
+        return this.examService.findByCourseId(courseId);
     }
 
     @Get('url/:url')

@@ -34,18 +34,24 @@ export class Question {
     paragraphId: number;
 
     @ManyToOne(() => Paragraph, paragraph => paragraph.questions, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'paragraphId' })
+    @JoinColumn()
     paragraph: Paragraph;
 
     @ManyToOne(() => Exam, exam => exam.questions, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'examId' })
+    @JoinColumn()
     exam: Exam;
 
     @ManyToOne(() => SubExam, subExam => subExam.questions, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'subExamId' })
+    @JoinColumn()
     subExam: SubExam;
 
     @OneToMany(() => Answer, answer => answer.question)
     answers: Answer[];
+
+    @Column({ type: 'varchar', length: 100, nullable: true })
+    shortAnswer: string;
+
+    @Column({ type: 'boolean', nullable: true })
+    trueFalse: boolean;
 }
 

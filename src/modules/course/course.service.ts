@@ -19,7 +19,7 @@ export class CourseService {
     async findAll(isExam: boolean): Promise<Course[]> {
         return await this.courseRepository.find({
             relations: isExam ? undefined : ['lessons'],
-            where: { isExam }
+            where: { isExam },
         });
     }
 
@@ -35,6 +35,15 @@ export class CourseService {
             where: { url },
         });
     }
+
+    async findBySubjectId(subjectId: number, isExam: boolean): Promise<Course[] | null> {
+        return await this.courseRepository.find({
+            where: { subjectId, isExam },
+            relations: ['lessons', 'lessons.exams'],
+            order: { id: 'ASC', lessons: { orderIndex: 'ASC', exams: { orderIndex: 'ASC' } } }
+        });
+    }
+
 
     async update(id: number, updateData: Partial<CreateCourseDto>): Promise<Course | null> {
         await this.courseRepository.update(id, updateData);

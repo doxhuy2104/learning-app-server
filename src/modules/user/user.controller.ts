@@ -4,7 +4,7 @@ import {
     Delete,
     Get,
     Param,
-    Patch,
+    Put,
     Post,
     ParseIntPipe,
     HttpCode,
@@ -49,11 +49,11 @@ export class UserController {
     async getCurrentUser(@CurrentUser() token: string, @Req() req: any) {
         const decoded = req.user;
 
-        if (!decoded || !decoded.user_id) {
+        if (!decoded || !decoded.id) {
             throw new Error('User ID not found in token');
         }
 
-        const user = await this.userService.findOne(decoded.user_id);
+        const user = await this.userService.findOne(decoded.id);
         return user;
     }
 
@@ -80,7 +80,7 @@ export class UserController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Patch(':id')
+    @Put(':id')
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateUserDto: UpdateUserDto,

@@ -18,5 +18,11 @@ export class Subject {
 
     @ManyToMany(() => Group, (group) => group.subjects)
     groups: Group[];
+
+    @OneToMany(() => Course, course => course.subject)
+    courses: Course[];
+
+    @Column({ type: 'int' })
+    duration: number;
 }
 

@@ -59,7 +59,7 @@ export class QuestionService {
     async findByExamId(
         examId: number,
         page: number = 1,
-        limit: number = 10,
+        limit: number = 100,
     ): Promise<{
         data: Question[];
         total: number;
@@ -71,7 +71,11 @@ export class QuestionService {
         const [data, total] = await this.questionRepository.findAndCount({
             where: { examId },
             relations: ['answers'],
-            order: { orderIndex: 'ASC' },
+            order: {
+                orderIndex: 'ASC', answers: {
+                    orderIndex: 'ASC'
+                }
+            },
             skip,
             take: limit,
         });

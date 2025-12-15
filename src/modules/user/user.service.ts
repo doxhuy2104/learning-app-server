@@ -110,7 +110,7 @@ export class UserService {
 
     async findOne(id: number): Promise<User> {
         const user = await this.userRepository.findOne({
-            where: { userId: id },
+            where: { id: id },
             relations: ['group', 'group.subjects'],
         });
 
@@ -133,7 +133,7 @@ export class UserService {
         updateUserDto: UpdateUserDto,
     ): Promise<User> {
         const user = await this.userRepository.findOne({
-            where: { userId: id },
+            where: { id: id },
             relations: ['group'],
         });
 
@@ -166,12 +166,23 @@ export class UserService {
         }
 
         const updatedUser = await this.userRepository.save(user);
-        return updatedUser;
+
+        // Load user again with group and subjects relations to return complete data
+        const userWithRelations = await this.userRepository.findOne({
+            where: { id: id },
+            relations: ['group', 'group.subjects'],
+        });
+
+        if (!userWithRelations) {
+            throw new NotFoundException(`User with ID ${id} not found`);
+        }
+
+        return userWithRelations;
     }
 
     async remove(id: number): Promise<void> {
         const user = await this.userRepository.findOne({
-            where: { userId: id },
+            where: { id: id },
         });
 
         if (!user) {
@@ -183,14 +194,14 @@ export class UserService {
 
     async updateLastLogin(id: number): Promise<void> {
         await this.userRepository.update(
-            { userId: id },
+            { id: id },
             { lastLogin: new Date() },
         );
     }
 
     async updateToken(id: number, token: string): Promise<void> {
         await this.userRepository.update(
-            { userId: id },
+            { id: id },
             { accessToken: token },
         );
     }

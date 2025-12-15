@@ -19,6 +19,7 @@ export class ExamService {
     async findAll(): Promise<Exam[]> {
         return await this.examRepository.find({
             relations: ['lesson', 'questions'],
+            order:{orderIndex:'ASC'}
         });
     }
 
@@ -32,6 +33,7 @@ export class ExamService {
     async findByLessonId(lessonId: number): Promise<Exam[]> {
         return await this.examRepository.find({
             where: { lessonId },
+            relations: ['lesson.course.subject'],
             order: { orderIndex: 'ASC' },
         });
     }

@@ -43,12 +43,12 @@ export class AuthService {
                 decodedToken,
             );
         } else {
-            await this.usersService.updateLastLogin(user.userId);
+            await this.usersService.updateLastLogin(user.id);
         }
 
-        const jwtToken = this.jwtService.sign({ user_id: user.userId });
+        const jwtToken = this.jwtService.sign({ id: user.id });
 
-        await this.usersService.updateToken(user.userId, jwtToken);
+        await this.usersService.updateToken(user.id, jwtToken);
 
         user.accessToken = jwtToken;
 
@@ -83,9 +83,9 @@ export class AuthService {
             }
         );
 
-        const jwtToken = this.jwtService.sign({ user_id: user.userId });
+        const jwtToken = this.jwtService.sign({ id: user.id });
 
-        await this.usersService.updateToken(user.userId, jwtToken);
+        await this.usersService.updateToken(user.id, jwtToken);
 
         user.accessToken = jwtToken;
 
@@ -125,7 +125,7 @@ export class AuthService {
             return this.usersService.createOrUpdateFromFirebaseToken(decodedToken);
         }
 
-        await this.usersService.updateLastLogin(user.userId);
+        await this.usersService.updateLastLogin(user.id);
         return user;
     }
 }

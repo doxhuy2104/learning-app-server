@@ -14,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 import { SubjectModule } from './modules/subject/subject.module';
 import { GroupModule } from './modules/group/group.module';
 import { SubExamModule } from './modules/sub-exam/sub-exam.module';
+import { HistoryModule } from './modules/history/history.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { SubExamModule } from './modules/sub-exam/sub-exam.module';
     SubjectModule,
     GroupModule,
     SubExamModule,
+    HistoryModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
     })

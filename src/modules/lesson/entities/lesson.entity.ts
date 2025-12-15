@@ -20,7 +20,7 @@ export class Lesson {
     courseId: number;
 
     @ManyToOne(() => Course, course => course.lessons, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'courseId' })
+    @JoinColumn()
     course: Course;
 
     @OneToMany(() => Exam, (exam) => exam.lesson)

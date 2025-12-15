@@ -42,7 +42,7 @@ export class QuestionController {
     findByExamId(
         @Param('examId', ParseIntPipe) examId: number,
         @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+        @Query('limit', new DefaultValuePipe(100), ParseIntPipe) limit: number,
     ) {
         return this.questionService.findByExamId(examId, page, limit);
     }

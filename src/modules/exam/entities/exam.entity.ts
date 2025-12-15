@@ -27,7 +27,7 @@ export class Exam {
     courseId: number;
 
     @ManyToOne(() => Lesson, lesson => lesson.exams, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'lessonId' })
+    @JoinColumn()
     lesson: Lesson;
 
     @OneToMany(() => Question, question => question.exam)
@@ -38,5 +38,8 @@ export class Exam {
 
     @Column({ type: 'int', default: 1 })
     quantity: number;
+
+    @Column({ type: 'int' })
+    duration: number;
 }
 

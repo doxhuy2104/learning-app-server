@@ -19,7 +19,18 @@ export class Answer {
     questionId: number;
 
     @ManyToOne(() => Question, question => question.answers, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'questionId' })
+    @JoinColumn()
     question: Question;
+
+    @Column({ type: 'text', nullable: true })
+    explanation: string;
+
+    @Column({
+        type: 'numeric',
+        precision: 5,
+        scale: 2,
+        default: 0
+    })
+    score: number;
 }
 

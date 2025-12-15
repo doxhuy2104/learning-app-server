@@ -23,7 +23,7 @@ export class SubExam {
     examId: number;
 
     @ManyToOne(() => Exam, exam => exam.subExams, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'examId' })
+    @JoinColumn()
     exam: Exam;
 
     @OneToMany(() => Question, question => question.subExam)

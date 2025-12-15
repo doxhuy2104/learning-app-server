@@ -40,6 +40,11 @@ export class CourseController {
         return this.courseService.findByurl(url);
     }
 
+    @Get('subject/:subjectId')
+    findBySubjectId(@Param('subjectId') subjectId: number, @Query('isExam') isExam: string) {
+        return this.courseService.findBySubjectId(subjectId, isExam === 'true');
+    }
+
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
