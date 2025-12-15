@@ -25,6 +25,9 @@ import { HistoryModule } from './modules/history/history.module';
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || '123456',
       database: process.env.DB_NAME || 'learning_app',
+      ssl: {
+        rejectUnauthorized: false,
+      },
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: process.env.NODE_ENV !== 'production',
       logging: process.env.NODE_ENV === 'development',
