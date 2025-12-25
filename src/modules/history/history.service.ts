@@ -8,6 +8,7 @@ import { UpdateExamHistoryDto } from './dto/update-exam-history.dto';
 import { CreateUserAnswerDto } from './dto/create-user-answer.dto';
 import { SubmitExamDto } from './dto/submit-exam.dto';
 import { Answer } from '../answer/entities/answer.entity';
+import { Question } from '../question/entities/question.entity';
 
 @Injectable()
 export class HistoryService {
@@ -18,6 +19,9 @@ export class HistoryService {
         private userAnswerRepository: Repository<UserAnswer>,
         @InjectRepository(Answer)
         private answerRepository: Repository<Answer>,
+        @InjectRepository(Question)
+        private questionRepository: Repository<Question>,
+
     ) { }
 
     async create(createExamHistoryDto: CreateExamHistoryDto): Promise<ExamHistory> {
@@ -41,12 +45,55 @@ export class HistoryService {
         return examHistory;
     }
 
-    async findByUserId(userId: number): Promise<ExamHistory[]> {
-        return await this.examHistoryRepository.find({
+    async findByUserId(
+        userId: number,
+        page: number = 1,
+        limit: number = 5,
+    ): Promise<{
+        data: ExamHistory[],
+        total: number;
+    }> {
+        const skip = (page - 1) * limit;
+        const [data, total] = await this.examHistoryRepository.findAndCount({
             where: { userId },
-            relations: ['exam', 'userAnswers'],
-            order: { id: 'DESC' },
+            relations: ['exam'],
+            order: {
+                id: 'DESC'
+            },
+            skip,
+            take: limit,
         });
+
+        return {
+            data,
+            total,
+        };
+    }
+
+    async findBySubjectId(
+        userId: number,
+        page: number = 1,
+        limit: number = 5,
+        subjectId: number
+    ): Promise<{
+        data: ExamHistory[],
+        total: number;
+    }> {
+        const skip = (page - 1) * limit;
+        const [data, total] = await this.examHistoryRepository.findAndCount({
+            where: { userId, subjectId },
+            relations: ['exam'],
+            order: {
+                id: 'DESC'
+            },
+            skip,
+            take: limit,
+        });
+
+        return {
+            data,
+            total,
+        };
     }
 
     async findByExamId(examId: number): Promise<ExamHistory[]> {
@@ -107,6 +154,7 @@ export class HistoryService {
             timeSpent,
             score,
             answers,
+            subjectId
         } = submitExamDto;
 
         // 1. Create history if not provided
@@ -117,6 +165,7 @@ export class HistoryService {
             const historyPayload: Partial<ExamHistory> = {
                 userId,
                 examId,
+                subjectId
             };
             examHistory = await this.examHistoryRepository.save(
                 this.examHistoryRepository.create(historyPayload),
@@ -151,10 +200,21 @@ export class HistoryService {
         return this.findOne(examHistory.id);
     }
 
-    async getUserAnswersByHistoryId(historyId: number): Promise<UserAnswer[]> {
-        return await this.userAnswerRepository.find({
+    async getUserAnswersByHistoryId(historyId: number, examId: number): Promise<{ userAnswers: UserAnswer[], questions: Question[] }> {
+        const userAnswers = await this.userAnswerRepository.find({
             where: { historyId },
+            order: { id: 'ASC' }
         });
+
+        const questions = await this.questionRepository.find({
+            where: { examId },
+            relations: ['answers'],
+            order: { id: 'ASC', answers: { orderIndex: 'ASC' } }
+        });
+
+        return {
+            userAnswers, questions,
+        };
     }
 }
 

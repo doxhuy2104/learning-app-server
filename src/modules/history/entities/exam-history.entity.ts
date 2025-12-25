@@ -23,6 +23,8 @@ export class ExamHistory {
     @Column({ type: 'int' })
     examId: number;
 
+    @Column({ type: 'int', nullable: true })
+    subjectId: number;
 
     @Column({ type: 'int', nullable: true })
     timeSpent?: number;
@@ -34,9 +36,9 @@ export class ExamHistory {
     // @JoinColumn({ name: 'user_id' })
     // user: User;
 
-    // @ManyToOne(() => Exam)
-    // @JoinColumn({ name: 'exam_id' })
-    // exam: Exam;
+    @ManyToOne(() => Exam)
+    @JoinColumn({ name: 'examId' })
+    exam: Exam;
 
     @OneToMany(() => UserAnswer, (userAnswer) => userAnswer.examHistory)
     userAnswers: UserAnswer[];

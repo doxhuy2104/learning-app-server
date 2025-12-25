@@ -41,6 +41,8 @@ export class SubmitExamDto {
     @IsNotEmpty()
     examId: number;
 
+    @IsInt()
+    subjectId: number;
 
     @IsOptional()
     @IsDateString()
