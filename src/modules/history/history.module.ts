@@ -4,7 +4,7 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Answer } from '../exam/answer/entities/answer.entity';
-import { Question } from '../question/entities/question.entity';
+import { Question } from '../exam/question/entities/question.entity';
 import { ExamHistory } from './entities/exam-history.entity';
 import { UserAnswer } from './entities/user-answer.entity';
 import { HistoryController } from './history.controller';

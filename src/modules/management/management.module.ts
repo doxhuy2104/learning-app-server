@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from '../auth/auth.module';
 import { Course } from '../exam/course/entities/course.entity';
 import { Exam } from '../exam/exam-question/entities/exam-question.entity';
 import { Lesson } from '../exam/lesson/entities/lesson.entity';
@@ -21,6 +22,7 @@ import { ManagementService } from './management.service';
             Subject,
             ExamHistory,
         ]),
+        AuthModule,
     ],
     controllers: [ManagementController],
     providers: [ManagementService],
