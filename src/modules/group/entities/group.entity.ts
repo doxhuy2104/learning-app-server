@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
-import { Subject } from '../../subject/entities/subject.entity';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Subject } from '../../exam/subject/entities/subject.entity';
 import { User } from '../../user/entities/user.entity';
 
 @Entity('groups')

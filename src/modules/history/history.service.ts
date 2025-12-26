@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
-import { ExamHistory } from './entities/exam-history.entity';
-import { UserAnswer } from './entities/user-answer.entity';
+import { Repository } from 'typeorm';
+import { Answer } from '../exam/answer/entities/answer.entity';
+import { Question } from '../question/entities/question.entity';
 import { CreateExamHistoryDto } from './dto/create-exam-history.dto';
-import { UpdateExamHistoryDto } from './dto/update-exam-history.dto';
 import { CreateUserAnswerDto } from './dto/create-user-answer.dto';
 import { SubmitExamDto } from './dto/submit-exam.dto';
-import { Answer } from '../answer/entities/answer.entity';
-import { Question } from '../question/entities/question.entity';
+import { UpdateExamHistoryDto } from './dto/update-exam-history.dto';
+import { ExamHistory } from './entities/exam-history.entity';
+import { UserAnswer } from './entities/user-answer.entity';
 
 @Injectable()
 export class HistoryService {

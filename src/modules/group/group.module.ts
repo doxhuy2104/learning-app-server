@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GroupService } from './group.service';
-import { GroupController } from './group.controller';
+import { Subject } from '../exam/subject/entities/subject.entity';
 import { Group } from './entities/group.entity';
-import { Subject } from '../subject/entities/subject.entity';
+import { GroupController } from './group.controller';
+import { GroupService } from './group.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Group, Subject])],

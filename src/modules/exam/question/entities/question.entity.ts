@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
-import { Exam } from '../../exam/entities/exam.entity';
+import { Paragraph } from 'src/modules/exam/paragraph/entities/paragraph.entity';
+import { SubExam } from 'src/modules/exam/sub-exam/entities/sub-exam.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Answer } from '../../answer/entities/answer.entity';
-import { Paragraph } from 'src/modules/paragraph/entities/paragraph.entity';
-import { SubExam } from 'src/modules/sub-exam/entities/sub-exam.entity';
+import { Exam } from '../../exam-question/entities/exam-question.entity';
 
 @Entity('questions')
 export class Question {

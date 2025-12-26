@@ -1,5 +1,5 @@
-import { Question } from 'src/modules/question/entities/question.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Question } from 'src/modules/exam/question/entities/question.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('paragraphs')
 export class Paragraph {

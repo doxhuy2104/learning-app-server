@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { Subject } from 'src/modules/exam/subject/entities/subject.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Lesson } from '../../lesson/entities/lesson.entity';
-import { Subject } from 'src/modules/subject/entities/subject.entity';
 
 @Entity('courses')
 export class Course {

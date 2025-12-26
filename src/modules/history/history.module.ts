@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HistoryService } from './history.service';
-import { HistoryController } from './history.controller';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Answer } from '../exam/answer/entities/answer.entity';
+import { Question } from '../question/entities/question.entity';
 import { ExamHistory } from './entities/exam-history.entity';
 import { UserAnswer } from './entities/user-answer.entity';
-import { Answer } from '../answer/entities/answer.entity';
-import { Question } from '../question/entities/question.entity';
-import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { HistoryController } from './history.controller';
+import { HistoryService } from './history.service';
 
 @Module({
     imports: [
@@ -28,7 +28,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
         }),
     ],
     controllers: [HistoryController],
-    providers: [HistoryService,JwtAuthGuard],
+    providers: [HistoryService, JwtAuthGuard],
     exports: [HistoryService],
 })
 export class HistoryModule { }

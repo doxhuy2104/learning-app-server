@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Lesson } from 'src/modules/exam/lesson/entities/lesson.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Question } from '../../question/entities/question.entity';
-import { Lesson } from 'src/modules/lesson/entities/lesson.entity';
 import { SubExam } from '../../sub-exam/entities/sub-exam.entity';
 
 @Entity('exams')

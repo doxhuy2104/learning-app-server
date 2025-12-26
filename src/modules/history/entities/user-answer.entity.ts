@@ -1,13 +1,13 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
     Column,
-    ManyToOne,
-    JoinColumn,
+    Entity,
     Index,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Exam } from '../../exam/exam-question/entities/exam-question.entity';
 import { ExamHistory } from './exam-history.entity';
-import { Exam } from '../../exam/entities/exam.entity';
 
 @Entity('user_answers')
 @Index(['historyId'])

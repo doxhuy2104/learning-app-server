@@ -1,14 +1,14 @@
 import {
+    BadRequestException,
     Injectable,
     UnauthorizedException,
-    BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { DecodedIdToken } from 'firebase-admin/auth';
 import { FirebaseService } from '../../firebase/firebase.service';
 import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { DecodedIdToken } from 'firebase-admin/auth';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +46,7 @@ export class AuthService {
             await this.usersService.updateLastLogin(user.id);
         }
 
-        const jwtToken = this.jwtService.sign({ id: user.id });
+        const jwtToken = this.jwtService.sign({ id: user.id, role: user.role });
 
         await this.usersService.updateToken(user.id, jwtToken);
 
@@ -83,7 +83,7 @@ export class AuthService {
             }
         );
 
-        const jwtToken = this.jwtService.sign({ id: user.id });
+        const jwtToken = this.jwtService.sign({ id: user.id, role: user.role });
 
         await this.usersService.updateToken(user.id, jwtToken);
 

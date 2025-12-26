@@ -1,14 +1,13 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
     Column,
+    Entity,
+    Index,
+    JoinColumn,
     ManyToOne,
     OneToMany,
-    JoinColumn,
-    Index,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
-import { Exam } from '../../exam/entities/exam.entity';
+import { Exam } from '../../exam/exam-question/entities/exam-question.entity';
 import { UserAnswer } from './user-answer.entity';
 
 @Entity('exam_histories')

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Exam } from './entities/exam.entity';
-import { CreateExamDto } from './dto/create-exam.dto';
+import { CreateExamDto } from './dto/create-exam-question.dto';
+import { Exam } from './entities/exam-question.entity';
 
 @Injectable()
-export class ExamService {
+export class ExamQuestionService {
     constructor(
         @InjectRepository(Exam)
         private examRepository: Repository<Exam>,
@@ -19,7 +19,7 @@ export class ExamService {
     async findAll(): Promise<Exam[]> {
         return await this.examRepository.find({
             relations: ['lesson', 'questions'],
-            order:{orderIndex:'ASC'}
+            order: { orderIndex: 'ASC' }
         });
     }
 

@@ -1,16 +1,17 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { UserModule } from '../user/user.module';
-import { FirebaseModule } from '../../firebase/firebase.module';
-import { JwtAuthGuard } from './jwt-auth.guard';
 import type { JwtModuleOptions } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
+import { FirebaseModule } from '../../firebase/firebase.module';
+import { UserModule } from '../user/user.module';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { RolesGuard } from './roles.guard';
 
 @Module({
     imports: [
-        forwardRef(() => UserModule), // Dùng forwardRef để tránh circular dependency
+        forwardRef(() => UserModule),
         FirebaseModule,
         JwtModule.registerAsync({
             imports: [ConfigModule],
@@ -27,7 +28,7 @@ import type { JwtModuleOptions } from '@nestjs/jwt';
         }),
     ],
     controllers: [AuthController],
-    providers: [AuthService, JwtAuthGuard],
-    exports: [AuthService, JwtAuthGuard],
+    providers: [AuthService, JwtAuthGuard, RolesGuard],
+    exports: [AuthService, JwtAuthGuard, RolesGuard],
 })
 export class AuthModule { }

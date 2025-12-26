@@ -1,6 +1,6 @@
-import { Course } from 'src/modules/course/entities/course.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany } from 'typeorm';
-import { Group } from '../../group/entities/group.entity';
+import { Course } from 'src/modules/exam/course/entities/course.entity';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Group } from '../../../group/entities/group.entity';
 
 @Entity('subjects')
 export class Subject {

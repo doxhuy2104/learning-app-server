@@ -1,14 +1,23 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ExamService } from './exam.service';
-import { ExamController } from './exam.controller';
-import { Exam } from './entities/exam.entity';
+import { Module } from "@nestjs/common";
+import { AnswerModule } from "./answer/answer.module";
+import { CourseModule } from "./course/course.module";
+import { ExamQuestionModule } from "./exam-question/exam-question.module";
+import { LessonModule } from "./lesson/lesson.module";
+import { ParagraphModule } from "./paragraph/paragraph.module";
+import { QuestionModule } from "./question/question.module";
+import { SubExamModule } from "./sub-exam/sub-exam.module";
+import { SubjectModule } from "./subject/subject.module";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Exam])],
-    controllers: [ExamController],
-    providers: [ExamService],
-    exports: [ExamService],
+    imports: [
+        AnswerModule,
+        CourseModule,
+        ExamQuestionModule,
+        LessonModule,
+        ParagraphModule,
+        QuestionModule,
+        SubExamModule,
+        SubjectModule,
+    ],
 })
 export class ExamModule { }
-

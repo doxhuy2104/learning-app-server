@@ -1,14 +1,14 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-    Index,
-    ManyToOne,
-    JoinColumn,
-} from 'typeorm';
 import { Group } from 'src/modules/group/entities/group.entity';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    Index,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('users')
 @Index(['email'])
@@ -48,6 +48,9 @@ export class User {
 
     @Column({ type: 'varchar', length: 500, nullable: true })
     accessToken?: string;
+
+    @Column({ type: 'varchar', length: 20, default: 'USER' })
+    role: 'ADMIN' | 'USER';
 
     @Column({ type: 'int', nullable: true })
     groupId?: number;
