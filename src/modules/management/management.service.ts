@@ -74,27 +74,40 @@ export class ManagementService {
         };
     }
 
-    async getUsers() {
-        const users = await this.userRepository.find({
+    async getUsers(page: number = 1, limit: number = 10) {
+        const skip = (page - 1) * limit;
+
+        const [data, total] = await this.userRepository.findAndCount({
+            where: { role: 'USER' },
             relations: ['group'],
             order: { createdAt: 'DESC' },
+            skip,
+            take: limit,
         });
 
         return {
-            total: users.length,
-            data: users,
+            page,
+            limit,
+            total,
+            data,
         };
     }
 
-    async getExams() {
-        const exams = await this.examRepository.find({
+    async getExams(page: number = 1, limit: number = 10) {
+        const skip = (page - 1) * limit;
+
+        const [data, total] = await this.examRepository.findAndCount({
             relations: ['lesson', 'lesson.course'],
             order: { id: 'DESC' },
+            skip,
+            take: limit,
         });
 
         return {
-            total: exams.length,
-            data: exams,
+            page,
+            limit,
+            total,
+            data,
         };
     }
 
@@ -116,15 +129,21 @@ export class ManagementService {
         };
     }
 
-    async getCourses() {
-        const courses = await this.courseRepository.find({
+    async getCourses(page: number = 1, limit: number = 10) {
+        const skip = (page - 1) * limit;
+
+        const [data, total] = await this.courseRepository.findAndCount({
             relations: ['subject'],
             order: { id: 'DESC' },
+            skip,
+            take: limit,
         });
 
         return {
-            total: courses.length,
-            data: courses,
+            page,
+            limit,
+            total,
+            data,
         };
     }
 

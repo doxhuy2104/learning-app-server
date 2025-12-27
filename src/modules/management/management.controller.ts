@@ -17,20 +17,30 @@ export class ManagementController {
 
     /**
      * GET /management/users
-     * Lấy danh sách người dùng cho trang quản lý
+     * Lấy danh sách người dùng cho trang quản lý (chỉ role USER, có phân trang)
      */
     @Get('users')
-    async getUsers() {
-        return this.managementService.getUsers();
+    async getUsers(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+    ) {
+        const pageNumber = page ? parseInt(page, 10) : 1;
+        const limitNumber = limit ? parseInt(limit, 10) : 10;
+        return this.managementService.getUsers(pageNumber, limitNumber);
     }
 
     /**
      * GET /management/exams
-     * Lấy danh sách đề thi cho trang quản lý
+     * Lấy danh sách đề thi cho trang quản lý (có phân trang)
      */
     @Get('exams')
-    async getExams() {
-        return this.managementService.getExams();
+    async getExams(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+    ) {
+        const pageNumber = page ? parseInt(page, 10) : 1;
+        const limitNumber = limit ? parseInt(limit, 10) : 10;
+        return this.managementService.getExams(pageNumber, limitNumber);
     }
 
     /**
@@ -49,11 +59,16 @@ export class ManagementController {
 
     /**
      * GET /management/courses
-     * Lấy danh sách khóa học cho trang quản lý
+     * Lấy danh sách khóa học cho trang quản lý (có phân trang)
      */
     @Get('courses')
-    async getCourses() {
-        return this.managementService.getCourses();
+    async getCourses(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+    ) {
+        const pageNumber = page ? parseInt(page, 10) : 1;
+        const limitNumber = limit ? parseInt(limit, 10) : 10;
+        return this.managementService.getCourses(pageNumber, limitNumber);
     }
 }
 
