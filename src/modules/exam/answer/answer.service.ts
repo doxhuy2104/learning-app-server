@@ -6,43 +6,45 @@ import { CreateAnswerDto } from './dto/create-answer.dto';
 
 @Injectable()
 export class AnswerService {
-    constructor(
-        @InjectRepository(Answer)
-        private answerRepository: Repository<Answer>,
-    ) { }
+  constructor(
+    @InjectRepository(Answer)
+    private answerRepository: Repository<Answer>,
+  ) {}
 
-    async create(createAnswerDto: CreateAnswerDto): Promise<Answer> {
-        const answer = this.answerRepository.create(createAnswerDto);
-        return await this.answerRepository.save(answer);
-    }
+  async create(createAnswerDto: CreateAnswerDto): Promise<Answer> {
+    const answer = this.answerRepository.create(createAnswerDto);
+    return await this.answerRepository.save(answer);
+  }
 
-    async findAll(): Promise<Answer[]> {
-        return await this.answerRepository.find({
-            relations: ['question'],
-        });
-    }
+  async findAll(): Promise<Answer[]> {
+    return await this.answerRepository.find({
+      relations: ['question'],
+    });
+  }
 
-    async findOne(id: number): Promise<Answer | null> {
-        return await this.answerRepository.findOne({
-            where: { id },
-            relations: ['question'],
-        });
-    }
+  async findOne(id: number): Promise<Answer | null> {
+    return await this.answerRepository.findOne({
+      where: { id },
+      relations: ['question'],
+    });
+  }
 
-    async findByQuestionId(questionId: number): Promise<Answer[]> {
-        return await this.answerRepository.find({
-            where: { questionId },
-            order: { orderIndex: 'ASC' },
-        });
-    }
+  async findByQuestionId(questionId: number): Promise<Answer[]> {
+    return await this.answerRepository.find({
+      where: { questionId },
+      order: { orderIndex: 'ASC' },
+    });
+  }
 
-    async update(id: number, updateData: Partial<CreateAnswerDto>): Promise<Answer | null> {
-        await this.answerRepository.update(id, updateData);
-        return this.findOne(id);
-    }
+  async update(
+    id: number,
+    updateData: Partial<CreateAnswerDto>,
+  ): Promise<Answer | null> {
+    await this.answerRepository.update(id, updateData);
+    return this.findOne(id);
+  }
 
-    async remove(id: number): Promise<void> {
-        await this.answerRepository.delete(id);
-    }
+  async remove(id: number): Promise<void> {
+    await this.answerRepository.delete(id);
+  }
 }
-

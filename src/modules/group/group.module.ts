@@ -6,10 +6,9 @@ import { GroupController } from './group.controller';
 import { GroupService } from './group.service';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Group, Subject])],
-    controllers: [GroupController],
-    providers: [GroupService],
-    exports: [GroupService],
+  imports: [TypeOrmModule.forFeature([Group, Subject])],
+  controllers: [GroupController],
+  providers: [GroupService],
+  exports: [GroupService],
 })
-export class GroupModule { }
-
+export class GroupModule {}

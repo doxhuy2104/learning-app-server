@@ -3,23 +3,21 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('paragraphs')
 export class Paragraph {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: 'varchar', length: 500 })
-    title: string;
+  @Column({ type: 'varchar', length: 500 })
+  title: string;
 
-    @Column({ type: 'text' })
-    content: string;
+  @Column({ type: 'text' })
+  content: string;
 
-    @Column({ type: 'int' })
-    examId: number;
+  @Column({ type: 'int' })
+  examId: number;
 
-    @Column({ type: 'varchar', length: 255 })
-    titleExamId: string;
+  @Column({ type: 'varchar', length: 255 })
+  titleExamId: string;
 
-
-    @OneToMany(() => Question, question => question.paragraph)
-    questions: Question[];
+  @OneToMany(() => Question, (question) => question.paragraph)
+  questions: Question[];
 }
-

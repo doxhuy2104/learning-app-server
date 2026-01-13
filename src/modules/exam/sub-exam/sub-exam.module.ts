@@ -5,10 +5,9 @@ import { SubExamController } from './sub-exam.controller';
 import { SubExam } from './entities/sub-exam.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([SubExam])],
-    controllers: [SubExamController],
-    providers: [SubExamService],
-    exports: [SubExamService],
+  imports: [TypeOrmModule.forFeature([SubExam])],
+  controllers: [SubExamController],
+  providers: [SubExamService],
+  exports: [SubExamService],
 })
-export class SubExamModule { }
-
+export class SubExamModule {}

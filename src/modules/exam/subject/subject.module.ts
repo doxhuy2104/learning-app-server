@@ -5,10 +5,9 @@ import { SubjectController } from './subject.controller';
 import { Subject } from './entities/subject.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Subject])],
-    controllers: [SubjectController],
-    providers: [SubjectService],
-    exports: [SubjectService],
+  imports: [TypeOrmModule.forFeature([Subject])],
+  controllers: [SubjectController],
+  providers: [SubjectService],
+  exports: [SubjectService],
 })
-export class SubjectModule { }
-
+export class SubjectModule {}

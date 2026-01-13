@@ -11,24 +11,25 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Group } from '../group/entities/group.entity';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([User, Group]),
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            useFactory: (configService: ConfigService): JwtModuleOptions => {
-                const expiresInValue = configService.get<string>('JWT_EXPIRES_IN') || '7d';
-                return {
-                    secret: configService.get<string>('JWT_SECRET') || 'your-secret-key',
-                    signOptions: {
-                        expiresIn: expiresInValue,
-                    },
-                } as JwtModuleOptions;
-            },
-            inject: [ConfigService],
-        }),
-    ],
-    controllers: [UserController],
-    providers: [UserService, JwtAuthGuard],
-    exports: [UserService],
+  imports: [
+    TypeOrmModule.forFeature([User, Group]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService): JwtModuleOptions => {
+        const expiresInValue =
+          configService.get<string>('JWT_EXPIRES_IN') || '7d';
+        return {
+          secret: configService.get<string>('JWT_SECRET') || 'your-secret-key',
+          signOptions: {
+            expiresIn: expiresInValue,
+          },
+        } as JwtModuleOptions;
+      },
+      inject: [ConfigService],
+    }),
+  ],
+  controllers: [UserController],
+  providers: [UserService, JwtAuthGuard],
+  exports: [UserService],
 })
-export class UserModule { }
+export class UserModule {}

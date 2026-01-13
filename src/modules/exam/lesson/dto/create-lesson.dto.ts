@@ -1,7 +1,6 @@
 export class CreateLessonDto {
-    title: string;
-    url?: string;
-    orderIndex?: number;
-    courseId: number;
+  title: string;
+  url?: string;
+  orderIndex?: number;
+  courseId: number;
 }
-

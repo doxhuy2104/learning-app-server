@@ -6,52 +6,59 @@ import { CreateCourseDto } from './dto/create-course.dto';
 
 @Injectable()
 export class CourseService {
-    constructor(
-        @InjectRepository(Course)
-        private courseRepository: Repository<Course>,
-    ) { }
+  constructor(
+    @InjectRepository(Course)
+    private courseRepository: Repository<Course>,
+  ) {}
 
-    async create(createCourseDto: CreateCourseDto): Promise<Course> {
-        const course = this.courseRepository.create(createCourseDto);
-        return await this.courseRepository.save(course);
-    }
+  async create(createCourseDto: CreateCourseDto): Promise<Course> {
+    const course = this.courseRepository.create(createCourseDto);
+    return await this.courseRepository.save(course);
+  }
 
-    async findAll(isExam: boolean): Promise<Course[]> {
-        return await this.courseRepository.find({
-            relations: isExam ? undefined : ['lessons'],
-            where: { isExam },
-        });
-    }
+  async findAll(isExam: boolean): Promise<Course[]> {
+    return await this.courseRepository.find({
+      relations: isExam ? undefined : ['lessons'],
+      where: { isExam },
+    });
+  }
 
-    async findOne(id: number): Promise<Course | null> {
-        return await this.courseRepository.findOne({
-            where: { id },
-            relations: ['lessons'],
-        });
-    }
+  async findOne(id: number): Promise<Course | null> {
+    return await this.courseRepository.findOne({
+      where: { id },
+      relations: ['lessons'],
+    });
+  }
 
-    async findByurl(url: string): Promise<Course | null> {
-        return await this.courseRepository.findOne({
-            where: { url },
-        });
-    }
+  async findByurl(url: string): Promise<Course | null> {
+    return await this.courseRepository.findOne({
+      where: { url },
+    });
+  }
 
-    async findBySubjectId(subjectId: number, isExam: boolean): Promise<Course[] | null> {
-        return await this.courseRepository.find({
-            where: { subjectId, isExam },
-            relations: ['lessons', 'lessons.exams'],
-            order: { id: 'ASC', lessons: { orderIndex: 'ASC', exams: { orderIndex: 'ASC' } } }
-        });
-    }
+  async findBySubjectId(
+    subjectId: number,
+    isExam: boolean,
+  ): Promise<Course[] | null> {
+    return await this.courseRepository.find({
+      where: { subjectId, isExam },
+      relations: ['lessons', 'lessons.exams'],
+      order: {
+        id: 'ASC',
+        lessons: { orderIndex: 'ASC', exams: { orderIndex: 'ASC' } },
+      },
+    });
+  }
 
+  async update(
+    id: number,
+    updateData: Partial<CreateCourseDto>,
+  ): Promise<Course | null> {
+    await this.courseRepository.update(id, updateData);
+    return this.findOne(id);
+  }
 
-    async update(id: number, updateData: Partial<CreateCourseDto>): Promise<Course | null> {
-        await this.courseRepository.update(id, updateData);
-        return this.findOne(id);
-    }
-
-    async remove(id: number): Promise<void> {
-        await this.courseRepository.delete(id);
-    }
+  async remove(id: number): Promise<void> {
+    await this.courseRepository.delete(id);
+  }
 }
-

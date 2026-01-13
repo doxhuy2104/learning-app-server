@@ -6,25 +6,24 @@ import { Group } from './entities/group.entity';
 
 @Injectable()
 export class GroupService {
-    constructor(
-        @InjectRepository(Group)
-        private groupRepository: Repository<Group>,
-        @InjectRepository(Subject)
-        private subjectRepository: Repository<Subject>,
-    ) { }
+  constructor(
+    @InjectRepository(Group)
+    private groupRepository: Repository<Group>,
+    @InjectRepository(Subject)
+    private subjectRepository: Repository<Subject>,
+  ) {}
 
-    async findAll(): Promise<Group[]> {
-        return await this.groupRepository.find({
-            relations: ['subjects'],
-            order: { id: 'ASC' },
-        });
-    }
+  async findAll(): Promise<Group[]> {
+    return await this.groupRepository.find({
+      relations: ['subjects'],
+      order: { id: 'ASC' },
+    });
+  }
 
-    async findOne(id: number): Promise<Group | null> {
-        return await this.groupRepository.findOne({
-            where: { id },
-            relations: ['subjects'],
-        });
-    }
+  async findOne(id: number): Promise<Group | null> {
+    return await this.groupRepository.findOne({
+      where: { id },
+      relations: ['subjects'],
+    });
+  }
 }
-

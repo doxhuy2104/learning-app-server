@@ -11,25 +11,25 @@ import { HistoryController } from './history.controller';
 import { HistoryService } from './history.service';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([ExamHistory, UserAnswer, Answer, Question]),
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            useFactory: (configService: ConfigService): JwtModuleOptions => {
-                const expiresInValue = configService.get<string>('JWT_EXPIRES_IN') || '7d';
-                return {
-                    secret: configService.get<string>('JWT_SECRET') || 'your-secret-key',
-                    signOptions: {
-                        expiresIn: expiresInValue,
-                    },
-                } as JwtModuleOptions;
-            },
-            inject: [ConfigService],
-        }),
-    ],
-    controllers: [HistoryController],
-    providers: [HistoryService, JwtAuthGuard],
-    exports: [HistoryService],
+  imports: [
+    TypeOrmModule.forFeature([ExamHistory, UserAnswer, Answer, Question]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService): JwtModuleOptions => {
+        const expiresInValue =
+          configService.get<string>('JWT_EXPIRES_IN') || '7d';
+        return {
+          secret: configService.get<string>('JWT_SECRET') || 'your-secret-key',
+          signOptions: {
+            expiresIn: expiresInValue,
+          },
+        } as JwtModuleOptions;
+      },
+      inject: [ConfigService],
+    }),
+  ],
+  controllers: [HistoryController],
+  providers: [HistoryService, JwtAuthGuard],
+  exports: [HistoryService],
 })
-export class HistoryModule { }
-
+export class HistoryModule {}

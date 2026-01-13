@@ -3,11 +3,12 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AdminModule } from './modules/admin/admin.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { GroupModule } from './modules/group/group.module';
 import { HistoryModule } from './modules/history/history.module';
-import { ManagementModule } from './modules/management/management.module';
+import { UploadModule } from './modules/upload/upload.module';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -34,10 +35,11 @@ import { UserModule } from './modules/user/user.module';
     AuthModule,
     GroupModule,
     HistoryModule,
-    ManagementModule,
+    AdminModule,
     ExamModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

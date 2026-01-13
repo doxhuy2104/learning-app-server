@@ -1,29 +1,35 @@
 import { Exam } from 'src/modules/exam/exam-question/entities/exam-question.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Course } from '../../course/entities/course.entity';
 
 @Entity('lessons')
 export class Lesson {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: 'varchar', length: 500 })
-    title: string;
+  @Column({ type: 'varchar', length: 500 })
+  title: string;
 
-    @Column({ type: 'varchar', length: 1000, nullable: true })
-    url: string;
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  url: string;
 
-    @Column({ type: 'int', default: 0 })
-    orderIndex: number;
+  @Column({ type: 'int', default: 0 })
+  orderIndex: number;
 
-    @Column({ type: 'int' })
-    courseId: number;
+  @Column({ type: 'int' })
+  courseId: number;
 
-    @ManyToOne(() => Course, course => course.lessons, { onDelete: 'CASCADE' })
-    @JoinColumn()
-    course: Course;
+  @ManyToOne(() => Course, (course) => course.lessons, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  course: Course;
 
-    @OneToMany(() => Exam, (exam) => exam.lesson)
-    exams: Exam[];
+  @OneToMany(() => Exam, (exam) => exam.lesson)
+  exams: Exam[];
 }
-

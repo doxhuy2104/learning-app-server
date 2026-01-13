@@ -6,39 +6,41 @@ import { CreateSubjectDto } from './dto/create-subject.dto';
 
 @Injectable()
 export class SubjectService {
-    constructor(
-        @InjectRepository(Subject)
-        private subjectRepository: Repository<Subject>,
-    ) { }
+  constructor(
+    @InjectRepository(Subject)
+    private subjectRepository: Repository<Subject>,
+  ) {}
 
-    async create(createSubjectDto: CreateSubjectDto): Promise<Subject> {
-        const subject = this.subjectRepository.create(createSubjectDto);
-        return await this.subjectRepository.save(subject);
-    }
+  async create(createSubjectDto: CreateSubjectDto): Promise<Subject> {
+    const subject = this.subjectRepository.create(createSubjectDto);
+    return await this.subjectRepository.save(subject);
+  }
 
-    async findAll(): Promise<Subject[]> {
-        return await this.subjectRepository.find();
-    }
+  async findAll(): Promise<Subject[]> {
+    return await this.subjectRepository.find();
+  }
 
-    async findOne(id: number): Promise<Subject | null> {
-        return await this.subjectRepository.findOne({
-            where: { id },
-        });
-    }
+  async findOne(id: number): Promise<Subject | null> {
+    return await this.subjectRepository.findOne({
+      where: { id },
+    });
+  }
 
-    async findByurl(url: string): Promise<Subject | null> {
-        return await this.subjectRepository.findOne({
-            where: { url },
-        });
-    }
+  async findByurl(url: string): Promise<Subject | null> {
+    return await this.subjectRepository.findOne({
+      where: { url },
+    });
+  }
 
-    async update(id: number, updateData: Partial<CreateSubjectDto>): Promise<Subject | null> {
-        await this.subjectRepository.update(id, updateData);
-        return this.findOne(id);
-    }
+  async update(
+    id: number,
+    updateData: Partial<CreateSubjectDto>,
+  ): Promise<Subject | null> {
+    await this.subjectRepository.update(id, updateData);
+    return this.findOne(id);
+  }
 
-    async remove(id: number): Promise<void> {
-        await this.subjectRepository.delete(id);
-    }
+  async remove(id: number): Promise<void> {
+    await this.subjectRepository.delete(id);
+  }
 }
-

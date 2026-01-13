@@ -10,25 +10,26 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { RolesGuard } from './roles.guard';
 
 @Module({
-    imports: [
-        forwardRef(() => UserModule),
-        FirebaseModule,
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            useFactory: (configService: ConfigService): JwtModuleOptions => {
-                const expiresInValue = configService.get<string>('JWT_EXPIRES_IN') || '7d';
-                return {
-                    secret: configService.get<string>('JWT_SECRET') || 'your-secret-key',
-                    signOptions: {
-                        expiresIn: expiresInValue,
-                    },
-                } as JwtModuleOptions;
-            },
-            inject: [ConfigService],
-        }),
-    ],
-    controllers: [AuthController],
-    providers: [AuthService, JwtAuthGuard, RolesGuard],
-    exports: [AuthService, JwtAuthGuard, RolesGuard, JwtModule],
+  imports: [
+    forwardRef(() => UserModule),
+    FirebaseModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService): JwtModuleOptions => {
+        const expiresInValue =
+          configService.get<string>('JWT_EXPIRES_IN') || '7d';
+        return {
+          secret: configService.get<string>('JWT_SECRET') || 'your-secret-key',
+          signOptions: {
+            expiresIn: expiresInValue,
+          },
+        } as JwtModuleOptions;
+      },
+      inject: [ConfigService],
+    }),
+  ],
+  controllers: [AuthController],
+  providers: [AuthService, JwtAuthGuard, RolesGuard],
+  exports: [AuthService, JwtAuthGuard, RolesGuard, JwtModule],
 })
-export class AuthModule { }
+export class AuthModule {}
