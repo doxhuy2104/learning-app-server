@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AnswerModule } from './answer/answer.module';
 import { CourseModule } from './course/course.module';
 import { ExamQuestionModule } from './exam-question/exam-question.module';
+import { ImageModule } from './image/image.module';
 import { LessonModule } from './lesson/lesson.module';
 import { ParagraphModule } from './paragraph/paragraph.module';
 import { QuestionModule } from './question/question.module';
@@ -18,6 +19,7 @@ import { SubjectModule } from './subject/subject.module';
     QuestionModule,
     SubExamModule,
     SubjectModule,
+    ImageModule,
   ],
 })
-export class ExamModule {}
+export class ExamModule { }

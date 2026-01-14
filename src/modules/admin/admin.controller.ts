@@ -1,13 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
   Query,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -18,7 +18,7 @@ import { OcrResultDto } from './dto/ocr-result.dto';
 
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(private readonly adminService: AdminService) { }
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -43,6 +43,13 @@ export class AdminController {
     const pageNumber = page ? parseInt(page, 10) : 1;
     const limitNumber = limit ? parseInt(limit, 10) : 10;
     return this.adminService.getExams(pageNumber, limitNumber);
+  }
+
+  @Delete('exams/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async deleteExam(@Param('id') id: string) {
+    return this.adminService.deleteExam(+id);
   }
 
   @Get('histories')
@@ -107,19 +114,27 @@ export class AdminController {
     return this.adminService.getQuestionsByExamId(examIdNumber);
   }
 
-  @Post('upload')
+  @Get('images/exam/:examId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async getImagesByExamId(@Param('examId') examId: string) {
+    const examIdNumber = parseInt(examId, 10);
+    return this.adminService.getImagesByExamId(examIdNumber);
+  }
+
+  @Post('ocr')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @UseInterceptors(FileInterceptor('file'))
   async uploadOcr(
-    @UploadedFile() file: any,
-    @Body('subjectId') subjectId?: string,
+    // @UploadedFile() file: any,
+    @Body('fileName') fileName?: string,
+    @Body('subjectId') subjectId?: number,
   ) {
-    if (!file) {
-      throw new Error('File is required');
+    if (!fileName) {
+      throw new Error('File name is required');
     }
-    const subjectIdNumber = subjectId ? parseInt(subjectId, 10) : undefined;
-    return this.adminService.uploadToOcr(file, subjectIdNumber);
+    return this.adminService.uploadToOcr(fileName, subjectId);
   }
 
   @Post('ocr/result')

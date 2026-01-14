@@ -23,6 +23,9 @@ export class Answer {
   @Column({ type: 'int', default: 0 })
   orderIndex: number;
 
+  @Column({ type: 'varchar', length: 100, default: 'html' })
+  dataType: string;
+
   @Column({ type: 'int' })
   questionId: number;
 

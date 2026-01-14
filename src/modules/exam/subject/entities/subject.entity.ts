@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Group } from '../../../group/entities/group.entity';
+import { Exam } from '../../exam-question/entities/exam-question.entity';
 
 @Entity('subjects')
 export class Subject {
@@ -27,6 +28,10 @@ export class Subject {
 
   @OneToMany(() => Course, (course) => course.subject)
   courses: Course[];
+
+  @OneToMany(() => Exam, (exam) => exam.subject)
+  exams: Exam[];
+
 
   @Column({ type: 'int' })
   duration: number;

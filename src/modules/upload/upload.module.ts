@@ -8,5 +8,6 @@ import { UploadService } from './upload.service';
     imports: [ConfigModule, AuthModule],
     controllers: [UploadController],
     providers: [UploadService],
+    exports: [UploadService],
 })
 export class UploadModule { }

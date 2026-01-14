@@ -15,7 +15,7 @@ import { ExamQuestionService } from './exam-question.service';
 
 @Controller('exam-question')
 export class ExamQuestionController {
-  constructor(private readonly examService: ExamQuestionService) {}
+  constructor(private readonly examService: ExamQuestionService) { }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -41,6 +41,11 @@ export class ExamQuestionController {
   @Get('course/:courseId')
   findByCourseId(@Param('courseId', ParseIntPipe) courseId: number) {
     return this.examService.findByCourseId(courseId);
+  }
+
+  @Get('subject/:subjectId')
+  findBySubjectId(@Param('subjectId', ParseIntPipe) subjectId: number) {
+    return this.examService.findBySubjectId(subjectId);
   }
 
   @Get('url/:url')

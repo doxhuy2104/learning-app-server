@@ -1,7 +1,7 @@
 export class OcrResultDto {
-  job_id: string;
+  file_name: string;
+  work_item_id: string;
   status: 'done' | 'error';
-  ocr_text?: string;
-  stderr_tail?: string;
   stdout_tail?: string;
+  stderr_tail?: string;
 }

@@ -9,7 +9,7 @@ export class ExamQuestionService {
   constructor(
     @InjectRepository(Exam)
     private examRepository: Repository<Exam>,
-  ) {}
+  ) { }
 
   async create(createExamDto: CreateExamDto): Promise<Exam> {
     const exam = this.examRepository.create(createExamDto);
@@ -41,6 +41,13 @@ export class ExamQuestionService {
   async findByCourseId(courseId: number): Promise<Exam[]> {
     return await this.examRepository.find({
       where: { courseId },
+      order: { orderIndex: 'ASC' },
+    });
+  }
+
+  async findBySubjectId(subjectId: number): Promise<Exam[]> {
+    return await this.examRepository.find({
+      where: { subjectId },
       order: { orderIndex: 'ASC' },
     });
   }

@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { Question } from '../../question/entities/question.entity';
 import { SubExam } from '../../sub-exam/entities/sub-exam.entity';
+import { Subject } from '../../subject/entities/subject.entity';
+import { Image } from '../../image/entities/image.entity';
 
 @Entity('exams')
 export class Exam {
@@ -48,4 +50,14 @@ export class Exam {
 
   @Column({ type: 'int' })
   duration: number;
+
+  @Column({ type: 'int', default: 2 })
+  subjectId: number;
+
+  @ManyToOne(() => Subject, (subject) => subject.exams, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  subject: Subject;
+
+  @OneToMany(() => Image, (image) => image.exam)
+  images: Image[];
 }

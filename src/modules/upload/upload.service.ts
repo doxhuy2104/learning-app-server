@@ -1,8 +1,7 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, GetObjectCommandOutput, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UploadService {
@@ -28,16 +27,64 @@ export class UploadService {
 
     async getPresignedUrl(
         fileName: string,
+        fileType: string,
     ): Promise<{ url: string; key: string }> {
-        const key = `uploads/${uuidv4()}-${fileName}`;
+        const key = `${fileType}/${fileName}`;
         const command = new PutObjectCommand({
             Bucket: this.bucketName,
             Key: key,
-            ContentType: 'application/pdf',
+            ContentType: fileType === 'pdf' ? 'application/pdf' : 'image/png',
         });
-
+        Logger.log('command', command);
         const url = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
 
         return { url, key };
+    }
+
+    async getFileContent(key: string): Promise<string> {
+        const command = new GetObjectCommand({
+            Bucket: this.bucketName,
+            Key: key,
+        });
+
+        try {
+            const response = await this.s3Client.send(command) as GetObjectCommandOutput;
+            return await response.Body?.transformToString() || '';
+        } catch (error: any) {
+            Logger.error(`Failed to get file content from S3: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async getFolderContent(prefix: string): Promise<string[]> {
+        const { ListObjectsV2Command } = await import('@aws-sdk/client-s3');
+        const command = new ListObjectsV2Command({
+            Bucket: this.bucketName,
+            Prefix: prefix,
+        });
+
+        const keys: string[] = [];
+        let isTruncated = true;
+        let continuationToken: string | undefined = undefined;
+
+        try {
+            while (isTruncated) {
+                const response = await this.s3Client.send(command);
+                if (response.Contents) {
+                    response.Contents.forEach((item) => {
+                        if (item.Key) {
+                            keys.push(item.Key);
+                        }
+                    });
+                }
+                isTruncated = response.IsTruncated ?? false;
+                continuationToken = response.NextContinuationToken;
+                command.input.ContinuationToken = continuationToken;
+            }
+            return keys;
+        } catch (error: any) {
+            Logger.error(`Failed to list folder content from S3: ${error.message}`);
+            throw error;
+        }
     }
 }
