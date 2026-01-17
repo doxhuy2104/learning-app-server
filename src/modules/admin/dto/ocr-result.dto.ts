@@ -4,4 +4,5 @@ export class OcrResultDto {
   status: 'done' | 'error';
   stdout_tail?: string;
   stderr_tail?: string;
+  subject_id: number;
 }

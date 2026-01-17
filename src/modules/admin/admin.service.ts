@@ -292,13 +292,6 @@ export class AdminService {
       ...(subjectId && { subject_id: subjectId }),
     };
 
-    const newExam = this.examRepository.create({
-      title: fileName,
-      duration: 90, // Default duration
-      totalQuestions: 0,
-      subjectId: subjectId || 1,
-    });
-    const savedExam = await this.examRepository.save(newExam);
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -324,7 +317,6 @@ export class AdminService {
         jobId: jobId,
         accepted: true,
         subjectId: subjectId,
-        examId: savedExam.id,
         status: 'submitted',
         ocrApiResponse: response.data,
       };
@@ -357,7 +349,7 @@ export class AdminService {
         const content = await this.uploadService.getFileContent(mdKey);
 
         if (content) {
-          await this.processOcrContent(content, fileName, resultDto.work_item_id);
+          await this.processOcrContent(content, fileName, resultDto.work_item_id, resultDto.subject_id);
           this.logger.log(`[OCR Callback] Successfully processed OCR content for ${fileName}`);
         } else {
           this.logger.warn(`[OCR Callback] No content found for key: ${mdKey}`);
@@ -386,20 +378,20 @@ export class AdminService {
     };
   }
 
-  private async processOcrContent(content: string, fileName: string, workItemId: string) {
-    let savedExam = await this.examRepository.findOne({ where: { title: fileName }, order: { id: 'DESC' } });
+  private async processOcrContent(content: string, fileName: string, workItemId: string, subjectId: number) {
+    // let savedExam = await this.examRepository.findOne({ where: { title: fileName }, order: { id: 'DESC' } });
 
-    if (!savedExam) {
-      const newExam = this.examRepository.create({
-        title: fileName,
-        duration: 90,
-        totalQuestions: 0,
-        subjectId: 1,
-        pdfName: fileName,
-        workItemId: workItemId,
-      });
-      savedExam = await this.examRepository.save(newExam);
-    }
+    // if (!savedExam) {
+    const newExam = this.examRepository.create({
+      title: fileName,
+      duration: 90,
+      totalQuestions: 0,
+      subjectId: subjectId,
+      pdfName: fileName,
+      workItemId: workItemId,
+    });
+    let savedExam = await this.examRepository.save(newExam);
+    // }
 
     const bucketName = this.configService.get<string>('AWS_BUCKET_NAME');
     const region = this.configService.get<string>('AWS_REGION');

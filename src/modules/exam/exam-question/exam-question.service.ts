@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { CreateExamDto } from './dto/create-exam-question.dto';
@@ -74,11 +74,12 @@ export class ExamQuestionService {
   async findBySubjectId(subjectId: number, userId?: number): Promise<Exam[]> {
     const exams = await this.examRepository.find({
       where: { subjectId },
-      order: { orderIndex: 'ASC' },
+      order: { id: 'DESC' },
     });
 
     if (userId) {
       await this.attachHistories(exams, userId);
+
     }
 
     return exams;
