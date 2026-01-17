@@ -392,9 +392,11 @@ export class AdminService {
     if (!savedExam) {
       const newExam = this.examRepository.create({
         title: fileName,
-        duration: 90, 
+        duration: 90,
         totalQuestions: 0,
         subjectId: 1,
+        pdfName: fileName,
+        workItemId: workItemId,
       });
       savedExam = await this.examRepository.save(newExam);
     }
@@ -463,8 +465,8 @@ export class AdminService {
               const pageInfo = pdfPageNumbers.find(p => start >= p[0] && start < p[1]);
 
               if (pageInfo) {
-                const pageNum = pageInfo[2]; 
-                const pageIndex = pageNum - 1; 
+                const pageNum = pageInfo[2];
+                const pageIndex = pageNum - 1;
 
                 const pageImages = images.filter(img => img.pageIndex === pageIndex);
 
@@ -578,6 +580,33 @@ export class AdminService {
   }
 
   async deleteExam(id: number) {
+    const exam = await this.examRepository.findOne({ where: { id } });
+
+    if (exam) {
+      try {
+        if (exam.workItemId) {
+          const workItemId = exam.workItemId;
+          // Delete image folder
+          await this.uploadService.deleteFolder(`image/${workItemId}/`);
+          // Delete done flag
+          await this.uploadService.deleteFile(`workspace/done_flags/done_${workItemId}.flag`);
+          // Delete jsonl output
+          await this.uploadService.deleteFile(`workspace/results/output_${workItemId}.jsonl`);
+        }
+
+        if (exam.pdfName) {
+          const pdfName = exam.pdfName;
+          // Delete PDF
+          await this.uploadService.deleteFile(`pdf/${pdfName}`);
+          // Delete markdown
+          const baseName = pdfName.replace(/\.[^/.]+$/, "");
+          await this.uploadService.deleteFile(`workspace/markdown/pdf/${baseName}.md`);
+        }
+      } catch (error) {
+        this.logger.error(`[Delete Exam] Failed to delete S3 resources for exam ${id}: ${error.message}`);
+      }
+    }
+
     return await this.examRepository.delete(id);
   }
 
@@ -631,7 +660,7 @@ export class AdminService {
         dataType: 'md',
         questionId: savedQ.id,
         orderIndex: index,
-        isCorrect: false, 
+        isCorrect: false,
       }));
       await this.answerRepository.save(answers);
     }
@@ -675,7 +704,7 @@ export class AdminService {
 
     if (parsedSubItems.length > 0) {
       const answers = parsedSubItems.map((item, index) => this.answerRepository.create({
-        content: item.content,  
+        content: item.content,
         questionId: savedQuestion.id,
         dataType: 'md',
         isCorrect: false,

@@ -1,4 +1,5 @@
 import { Group } from 'src/modules/group/entities/group.entity';
+import { ExamHistory } from 'src/modules/history/entities/exam-history.entity';
 import {
   Column,
   CreateDateColumn,
@@ -6,6 +7,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -58,4 +60,7 @@ export class User {
   @ManyToOne(() => Group, { nullable: true })
   @JoinColumn()
   group?: Group;
+
+  @OneToMany(() => ExamHistory, (examHistory) => examHistory.user)
+  examHistories: ExamHistory[];
 }

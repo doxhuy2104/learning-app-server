@@ -1,4 +1,5 @@
 import { Lesson } from 'src/modules/exam/lesson/entities/lesson.entity';
+import { ExamHistory } from 'src/modules/history/entities/exam-history.entity';
 import {
   Column,
   Entity,
@@ -7,11 +8,11 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Image } from '../../image/entities/image.entity';
+import { Paragraph } from '../../paragraph/entities/paragraph.entity';
 import { Question } from '../../question/entities/question.entity';
 import { SubExam } from '../../sub-exam/entities/sub-exam.entity';
 import { Subject } from '../../subject/entities/subject.entity';
-import { Image } from '../../image/entities/image.entity';
-import { Paragraph } from '../../paragraph/entities/paragraph.entity';
 
 @Entity('exams')
 export class Exam {
@@ -64,4 +65,12 @@ export class Exam {
 
   @OneToMany(() => Image, (image) => image.exam)
   images: Image[];
+
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  pdfName: string;
+
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  workItemId: string;
+
+  histories?: ExamHistory[];
 }

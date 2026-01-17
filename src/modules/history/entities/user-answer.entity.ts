@@ -50,11 +50,8 @@ export class UserAnswer {
   @JoinColumn()
   examHistory: ExamHistory;
 
-  @ManyToOne(() => Exam)
+  @ManyToOne(() => Exam, { onDelete: 'CASCADE' })
   @JoinColumn()
   exam: Exam;
 
-  @ManyToOne(() => ExamHistory)
-  @JoinColumn()
-  history: ExamHistory;
 }

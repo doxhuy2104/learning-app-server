@@ -87,4 +87,39 @@ export class UploadService {
             throw error;
         }
     }
+
+    async deleteFile(key: string): Promise<void> {
+        const { DeleteObjectCommand } = await import('@aws-sdk/client-s3');
+        const command = new DeleteObjectCommand({
+            Bucket: this.bucketName,
+            Key: key,
+        });
+
+        try {
+            await this.s3Client.send(command);
+        } catch (error: any) {
+            Logger.error(`Failed to delete file from S3: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async deleteFolder(prefix: string): Promise<void> {
+        const keys = await this.getFolderContent(prefix);
+        if (keys.length > 0) {
+            const { DeleteObjectsCommand } = await import('@aws-sdk/client-s3');
+            const command = new DeleteObjectsCommand({
+                Bucket: this.bucketName,
+                Delete: {
+                    Objects: keys.map(k => ({ Key: k })),
+                },
+            });
+            try {
+                await this.s3Client.send(command);
+            } catch (error: any) {
+                Logger.error(`Failed to delete folder from S3: ${error.message}`);
+                throw error;
+            }
+        }
+    }
 }
+

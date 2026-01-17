@@ -36,7 +36,7 @@ export class ExamHistory {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(() => Exam)
+  @ManyToOne(() => Exam, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'examId' })
   exam: Exam;
 
