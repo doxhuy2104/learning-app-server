@@ -11,6 +11,7 @@ import { Question } from '../../question/entities/question.entity';
 import { SubExam } from '../../sub-exam/entities/sub-exam.entity';
 import { Subject } from '../../subject/entities/subject.entity';
 import { Image } from '../../image/entities/image.entity';
+import { Paragraph } from '../../paragraph/entities/paragraph.entity';
 
 @Entity('exams')
 export class Exam {
@@ -57,6 +58,9 @@ export class Exam {
   @ManyToOne(() => Subject, (subject) => subject.exams, { onDelete: 'CASCADE' })
   @JoinColumn()
   subject: Subject;
+
+  @OneToMany(() => Paragraph, (paragraph) => paragraph.exam)
+  paragraphs: Paragraph[];
 
   @OneToMany(() => Image, (image) => image.exam)
   images: Image[];

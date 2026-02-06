@@ -292,6 +292,14 @@ export class AdminService {
       ...(subjectId && { subject_id: subjectId }),
     };
 
+    const newExam = this.examRepository.create({
+      title: fileName,
+      duration: 90, // Default duration
+      totalQuestions: 0,
+      subjectId: subjectId || 1,
+    });
+    const savedExam = await this.examRepository.save(newExam);
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
@@ -316,6 +324,7 @@ export class AdminService {
         jobId: jobId,
         accepted: true,
         subjectId: subjectId,
+        examId: savedExam.id,
         status: 'submitted',
         ocrApiResponse: response.data,
       };
@@ -340,8 +349,6 @@ export class AdminService {
 
       try {
         const fileName = resultDto.file_name;
-        // Construct S3 key from filename. Assuming structure: workspace/markdown/pdf/{filename_no_ext}.md
-        // Example: file.pdf -> workspace/markdown/pdf/file.md
         const baseName = fileName.replace(/\.[^/.]+$/, "");
         const mdKey = `workspace/markdown/pdf/${baseName}.md`;
 
@@ -358,7 +365,6 @@ export class AdminService {
 
       } catch (error) {
         this.logger.error(`[OCR Callback] Failed to process OCR content: ${error.message}`, error.stack);
-        // Do not throw, just log, so we return received: true
       }
 
     } else if (resultDto.status === 'error') {
@@ -381,14 +387,17 @@ export class AdminService {
   }
 
   private async processOcrContent(content: string, fileName: string, workItemId: string) {
-    const newExam = this.examRepository.create({
-      title: fileName,
-      duration: 90, // Default duration
-      totalQuestions: 0,
-      subjectId: 1,
-    });
+    let savedExam = await this.examRepository.findOne({ where: { title: fileName }, order: { id: 'DESC' } });
 
-    const savedExam = await this.examRepository.save(newExam);
+    if (!savedExam) {
+      const newExam = this.examRepository.create({
+        title: fileName,
+        duration: 90, 
+        totalQuestions: 0,
+        subjectId: 1,
+      });
+      savedExam = await this.examRepository.save(newExam);
+    }
 
     const bucketName = this.configService.get<string>('AWS_BUCKET_NAME');
     const region = this.configService.get<string>('AWS_REGION');
@@ -433,7 +442,6 @@ export class AdminService {
         }));
         await this.imageRepository.save(examImages);
 
-        // Fetch JSONL for page mapping
         const jsonlKey = `workspace/results/output_${workItemId}.jsonl`;
         const jsonlContent = await this.uploadService.getFileContent(jsonlKey);
 
@@ -441,12 +449,8 @@ export class AdminService {
           try {
             const jsonlData = JSON.parse(jsonlContent);
             const pdfPageNumbers: [number, number, number][] = jsonlData?.attributes?.pdf_page_numbers || [];
-            // Use original content for offset calculation but verify it matches 'text' in JSONL?
-            // We trust 'content' passed here corresponds to 'text' in JSONL as they come from same source.
-
             const fullText = content;
 
-            // Find all placeholders ![...] (page_...)
             const placeholderRegex = /!\[.*?\]\((page_\d+_\d+_\d+_\d+\.png)\)/g;
             let match;
             const replacements: { start: number, end: number, url: string }[] = [];
@@ -456,12 +460,11 @@ export class AdminService {
               const start = match.index;
               const end = start + match[0].length;
 
-              // Find page number for this offset
               const pageInfo = pdfPageNumbers.find(p => start >= p[0] && start < p[1]);
 
               if (pageInfo) {
-                const pageNum = pageInfo[2]; // 1-based
-                const pageIndex = pageNum - 1; // 0-based to match image filename "page0_..."
+                const pageNum = pageInfo[2]; 
+                const pageIndex = pageNum - 1; 
 
                 const pageImages = images.filter(img => img.pageIndex === pageIndex);
 
@@ -499,7 +502,7 @@ export class AdminService {
     const normalizedContent = processedContent.replace(/\r\n/g, '\n');
 
     // Find indices of parts PHẦN I, PHẦN II, PHẦN III
-    const partRegex = /PHẦN\s+(I|II|III)(?:\.|:|\s)/g;
+    const partRegex = /(?:PHẦN|Phần)\s+(I|II|III)(?:\.|:|\s)/g;
     let match;
     const partsIndices: { index: number, type: string }[] = [];
 
@@ -534,12 +537,8 @@ export class AdminService {
 
   private async parseQuestionsSection(content: string, type: string, examId: number, startIndex: number): Promise<number> {
     this.logger.log(content);
-    // Split by "Câu <number>."
-    // Regex: \nCâu\s+\d+[\.:]
     const questionSplitRegex = /\nCâu\s+\d+[\.:]/g;
 
-    // Need to capture the "Câu X" part to keep it or just split
-    // Let's iterate matches to get start/end
 
     const questions: { start: number, label: string }[] = [];
     let match;
@@ -554,11 +553,7 @@ export class AdminService {
       const nextQ = questions[i + 1];
       const end = nextQ ? nextQ.start : content.length;
 
-      // Content includes "Câu X. ..."
       let qContent = content.substring(q.start, end).trim();
-      // Remove the "Câu X." prefix from content if desired, or keep it.
-      // Usually keep it in 'content' to preserve context, or remove it. 
-      // The label "Câu 1." is useful. let's keep it.
 
       const currentOrder = startIndex + count + 1;
 
@@ -566,10 +561,7 @@ export class AdminService {
         await this.saveChoiceQuestion(qContent, examId, currentOrder);
         count++;
       } else if (type === 'true_false') {
-        // For T/F, checking if it has sub-parts a,b,c,d
         await this.saveTrueFalseQuestion(qContent, examId, currentOrder);
-        // One parent question or 4 sub questions?
-        // Implementation detail in saveTrueFalseQuestion
         count++;
       } else if (type === 'short_answer') {
         await this.saveShortAnswerQuestion(qContent, examId, currentOrder);
@@ -589,25 +581,12 @@ export class AdminService {
     return await this.examRepository.delete(id);
   }
 
+  async updateExam(id: number, data: Partial<Exam>) {
+    await this.examRepository.update(id, data);
+    return this.examRepository.findOne({ where: { id } });
+  }
+
   private async saveChoiceQuestion(rawContent: string, examId: number, orderIndex: number) {
-    // Extract Options A, B, C, D
-    // Naive approach: find last occurrence of "A.", "B.", etc.
-    // But options can be multiline.
-
-    // Regex for options: \n[A-D][\.\)]\s
-    // Or just [A-D][\.\)]\s if they are inline.
-
-    // Let's assume options are at the end.
-    // We'll try to split by option keys.
-
-    // Pattern:
-    // Content...
-    // A. Option A
-    // B. Option B
-    // ...
-
-    // Find indexes of A., B., C., D.
-    // Be careful of false positives.
 
     const optionRegex = /(?:\n|^|\s)([A-D])[\.\)]/g;
     const options: { key: string, index: number }[] = [];
@@ -617,27 +596,13 @@ export class AdminService {
       options.push({ key: match[1], index: match.index });
     }
 
-    // Filter options: valid sequence A, B, C, D?
-    // Sometimes only A, B, C, D present.
-    // Simple logic: if we have 4 matches distinct A, B, C, D, take them.
-
     let questionText = rawContent;
     const finalOptions: { key: string, content: string }[] = [];
 
     if (options.length >= 4) {
-      // Take the last 4 that form A, B, C, D set?
-      // Or just take found options.
-      // Let's assume the LAST usage of A, B, C, D are the options (in case "A" appears in text).
-      // Actually, 'A.' is rare in text.
-
-      // Let's try to extract from the first found "A." that starts a sequence.
       const startA = options.find(o => o.key === 'A');
       if (startA) {
         questionText = rawContent.substring(0, startA.index).trim();
-
-        // Now parsing options
-        // We need to slice the string.
-        // But we need the indices of B, C, D relative to A.
 
         const relevantOptions = options.filter(o => o.index >= startA.index);
 
@@ -645,7 +610,6 @@ export class AdminService {
           const opt = relevantOptions[i];
           const nextOpt = relevantOptions[i + 1];
           const optEnd = nextOpt ? nextOpt.index : rawContent.length;
-          // +2 for "A." or "A)" length approx
           const optContent = rawContent.substring(opt.index + 2, optEnd).trim().replace(/^[\.\)]\s*/, '');
           finalOptions.push({ key: opt.key, content: `${opt.key}. ${optContent}` });
         }
@@ -662,20 +626,18 @@ export class AdminService {
     const savedQ = await this.questionRepository.save(question);
 
     if (finalOptions.length > 0) {
-      const answers = finalOptions.map(o => this.answerRepository.create({
+      const answers = finalOptions.map((o, index) => this.answerRepository.create({
         content: o.content,
         dataType: 'md',
         questionId: savedQ.id,
-        isCorrect: false, // Cannot determine from OCR
+        orderIndex: index,
+        isCorrect: false, 
       }));
       await this.answerRepository.save(answers);
     }
   }
 
   private async saveTrueFalseQuestion(rawContent: string, examId: number, orderIndex: number) {
-    // Structure: Câu X. Stem... a) ... b) ...
-    // Extract Stem and a,b,c,d
-
     const subItemRegex = /(?:\n|^|\s)([a-d])[\.\)]/g;
     const subItems: { key: string, index: number }[] = [];
     let match;
@@ -695,19 +657,13 @@ export class AdminService {
         const nextItem = subItems[i + 1];
         const end = nextItem ? nextItem.index : rawContent.length;
 
-        // Use full match logic or just substring
-        // rawContent header matches delimiter. The content starts after the delimiter/symbol.
-        // We know it starts around item.index. Substring including prefix:
         const rawSub = rawContent.substring(item.index, end);
-        // Clean up prefix " a) ", "\na. ", etc.
-        // Regex: start with optional whitespace, then [a-d], then dot or paren, then space
         const itemContent = rawSub.replace(/^[\s\r\n]*[a-d][\.\)]\s*/i, '').trim();
 
         parsedSubItems.push({ key: item.key, content: itemContent });
       }
     }
 
-    // Save as ONE Question with type 'true_false'
     const question = this.questionRepository.create({
       content: stem,
       type: 'true_false',
@@ -717,19 +673,15 @@ export class AdminService {
     });
     const savedQuestion = await this.questionRepository.save(question);
 
-    // Save sub-items as Answers
     if (parsedSubItems.length > 0) {
       const answers = parsedSubItems.map((item, index) => this.answerRepository.create({
-        content: item.content,  // Store "a) ..." content or just content
+        content: item.content,  
         questionId: savedQuestion.id,
         dataType: 'md',
-        isCorrect: false, // Cannot distinguish without key
+        isCorrect: false,
         orderIndex: index,
-        // explanation: item.key // Could store 'a', 'b' in explanation or check logic
       }));
       await this.answerRepository.save(answers);
-    } else {
-      // Fallback: no sub items found, just save question (could be parsing error or empty)
     }
   }
 

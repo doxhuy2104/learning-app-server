@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Exam } from '../../exam/exam-question/entities/exam-question.entity';
+import { User } from '../../user/entities/user.entity';
 import { UserAnswer } from './user-answer.entity';
 
 @Entity('exam_histories')
@@ -31,9 +32,9 @@ export class ExamHistory {
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   score?: number;
 
-  // @ManyToOne(() => User)
-  // @JoinColumn({ name: 'user_id' })
-  // user: User;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
   @ManyToOne(() => Exam)
   @JoinColumn({ name: 'examId' })

@@ -53,4 +53,8 @@ export class UserAnswer {
   @ManyToOne(() => Exam)
   @JoinColumn()
   exam: Exam;
+
+  @ManyToOne(() => ExamHistory)
+  @JoinColumn()
+  history: ExamHistory;
 }

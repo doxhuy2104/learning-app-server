@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -50,6 +51,13 @@ export class AdminController {
   @Roles('ADMIN')
   async deleteExam(@Param('id') id: string) {
     return this.adminService.deleteExam(+id);
+  }
+
+  @Patch('exams/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async updateExam(@Param('id') id: string, @Body() data: any) {
+    return this.adminService.updateExam(+id, data);
   }
 
   @Get('histories')

@@ -1,5 +1,6 @@
 import { Question } from 'src/modules/exam/question/entities/question.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Exam } from '../../exam-question/entities/exam-question.entity';
 
 @Entity('paragraphs')
 export class Paragraph {
@@ -20,4 +21,7 @@ export class Paragraph {
 
   @OneToMany(() => Question, (question) => question.paragraph)
   questions: Question[];
+
+  @ManyToOne(() => Exam, (exam) => exam.paragraphs)
+  exam: Exam;
 }
